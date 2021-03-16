@@ -1,20 +1,31 @@
 import {
     IHandler,
-    IHandlerOptions,
     ILogMeta
 } from '../types.js';
 
-import { Handler } from '../handlers/handler.js';
+import { InvalidSchemaError } from '../errors'
 
-export class ConsoleHandler extends Handler implements IHandler {
+import { SchemaHandler, ISchemaHandlerOptions } from '../handlers/schema_handler.js';
 
-    constructor(options: IHandlerOptions) {
-        super(options);
+interface IConsoleSchemaHandlerOptions extends ISchemaHandlerOptions {
+    enforce: boolean;
+}
+
+export class ConsoleSchemaHandler extends SchemaHandler implements IHandler {
+
+    private _enforce: boolean;
+
+    constructor({ schemas = [], formatter, level, enforce }: IConsoleSchemaHandlerOptions) {
+        super({ schemas, formatter, level });
+
+        this._enforce = enforce;
     }
 
-    async handle(msg: any, meta: ILogMeta) {
-        
-        msg = await super.handle(msg, meta);
+    public async handle(msg: any, meta: ILogMeta) {
+
+        if (this._enforce && !this.schemasContains(msg)) {
+            throw new InvalidSchemaError('InvalidSchemaError');
+        }
 
         console.log(msg);
     }

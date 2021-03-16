@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Level = void 0;
 var Level;
 (function (Level) {
+    Level[Level["BASE"] = 0] = "BASE";
     Level[Level["DEBUG"] = 100] = "DEBUG";
     Level[Level["INFO"] = 1000] = "INFO";
     Level[Level["WARN"] = 10000] = "WARN";

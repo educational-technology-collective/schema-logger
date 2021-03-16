@@ -51,29 +51,62 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ConsoleSchemaHandler = void 0;
+exports.S3BucketSchemaHandler = void 0;
 var errors_1 = require("../errors");
 var schema_handler_js_1 = require("../handlers/schema_handler.js");
-var ConsoleSchemaHandler = /** @class */ (function (_super) {
-    __extends(ConsoleSchemaHandler, _super);
-    function ConsoleSchemaHandler(_a) {
-        var _b = _a.schemas, schemas = _b === void 0 ? [] : _b, formatter = _a.formatter, level = _a.level, enforce = _a.enforce;
+var S3BucketSchemaHandler = /** @class */ (function (_super) {
+    __extends(S3BucketSchemaHandler, _super);
+    function S3BucketSchemaHandler(_a) {
+        var api = _a.api, bucket = _a.bucket, schemas = _a.schemas, formatter = _a.formatter, level = _a.level, _b = _a.enforce, enforce = _b === void 0 ? false : _b;
         var _this = _super.call(this, { schemas: schemas, formatter: formatter, level: level }) || this;
+        _this._api = api;
+        _this._bucket = bucket;
         _this._enforce = enforce;
         return _this;
     }
-    ConsoleSchemaHandler.prototype.handle = function (msg, meta) {
+    S3BucketSchemaHandler.prototype.handle = function (msg, meta) {
         return __awaiter(this, void 0, void 0, function () {
+            var date, year, month, day, timestamp, path, url, response;
             return __generator(this, function (_a) {
-                if (this._enforce && !this.schemasContains(msg)) {
-                    throw new errors_1.InvalidSchemaError('InvalidSchemaError');
+                switch (_a.label) {
+                    case 0:
+                        if (meta.level < this._level) {
+                            return [2 /*return*/];
+                        }
+                        if (this._enforce && !this.schemasContains(msg)) {
+                            throw new errors_1.InvalidSchemaError('InvalidSchemaError');
+                        }
+                        msg = this._formatter.format(msg, meta);
+                        date = new Date();
+                        year = date.getFullYear();
+                        month = (date.getMonth() + 1).toString().padStart(2, '0');
+                        day = date.getDate().toString().padStart(2, '0');
+                        timestamp = date.getTime();
+                        path = [this._bucket, year, month, day, timestamp].join('/');
+                        url = this._api.replace(/\/+$/g, '') + '/' + path;
+                        return [4 /*yield*/, fetch(url, {
+                                method: 'PUT',
+                                mode: 'cors',
+                                cache: 'no-cache',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                    // 'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                                redirect: 'follow',
+                                referrerPolicy: 'no-referrer',
+                                body: msg // body data type must match "Content-Type" header
+                            })];
+                    case 1:
+                        response = _a.sent();
+                        if (!response.ok) {
+                            throw new errors_1.HTTPError(response.status + ' ' + response.statusText);
+                        }
+                        return [2 /*return*/, response];
                 }
-                console.log(msg);
-                return [2 /*return*/];
             });
         });
     };
-    return ConsoleSchemaHandler;
+    return S3BucketSchemaHandler;
 }(schema_handler_js_1.SchemaHandler));
-exports.ConsoleSchemaHandler = ConsoleSchemaHandler;
-//# sourceMappingURL=console_handler.js.map
+exports.S3BucketSchemaHandler = S3BucketSchemaHandler;
+//# sourceMappingURL=s3_bucket_schema_handler.js.map
