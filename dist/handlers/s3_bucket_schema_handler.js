@@ -67,9 +67,10 @@ var S3BucketSchemaHandler = /** @class */ (function (_super) {
     }
     S3BucketSchemaHandler.prototype.handle = function (msg, meta) {
         return __awaiter(this, void 0, void 0, function () {
-            var url, response;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var url, response, headers_1, _a, _b, _c, _d;
+            var _e;
+            return __generator(this, function (_f) {
+                switch (_f.label) {
                     case 0:
                         if (meta.level < this._level) {
                             return [2 /*return*/];
@@ -92,11 +93,27 @@ var S3BucketSchemaHandler = /** @class */ (function (_super) {
                                 body: msg // body data type must match "Content-Type" header
                             })];
                     case 1:
-                        response = _a.sent();
-                        if (!response.ok) {
-                            throw new errors_1.HTTPError(response.status + ' ' + response.statusText);
+                        response = _f.sent();
+                        if (!!response.ok) return [3 /*break*/, 3];
+                        headers_1 = {};
+                        try {
+                            response.headers.forEach(function (value, key) {
+                                headers_1[key] = value;
+                            });
                         }
-                        return [2 /*return*/, response];
+                        catch (_g) { }
+                        _a = errors_1.HTTPError.bind;
+                        _c = (_b = JSON).stringify;
+                        _e = {
+                            "response.status": response.status,
+                            "response.statusText": response.statusText
+                        };
+                        _d = "response.text()";
+                        return [4 /*yield*/, response.text()];
+                    case 2: throw new (_a.apply(errors_1.HTTPError, [void 0, _c.apply(_b, [(_e[_d] = _f.sent(),
+                                _e["response.headers"] = headers_1,
+                                _e)])]))();
+                    case 3: return [2 /*return*/, response];
                 }
             });
         });

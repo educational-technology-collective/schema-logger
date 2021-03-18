@@ -66,7 +66,22 @@ export class S3BucketSchemaHandler extends SchemaHandler implements IHandler {
         });
 
         if (!response.ok) {
-            throw new HTTPError(response.status + ' ' + response.statusText);
+
+            let headers: { [key:string]: string } = {};
+
+            try  {
+                response.headers.forEach((value, key)=>{
+                    headers[key] = value;
+                });
+            }
+            catch {}
+
+            throw new HTTPError(JSON.stringify({
+                "response.status": response.status,
+                "response.statusText": response.statusText,
+                "response.text()": await response.text(),
+                "response.headers": headers
+            }));
         }
 
         return response;
