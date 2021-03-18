@@ -57,16 +57,17 @@ var schema_handler_js_1 = require("../handlers/schema_handler.js");
 var S3BucketSchemaHandler = /** @class */ (function (_super) {
     __extends(S3BucketSchemaHandler, _super);
     function S3BucketSchemaHandler(_a) {
-        var api = _a.api, bucket = _a.bucket, schemas = _a.schemas, formatter = _a.formatter, level = _a.level, _b = _a.enforce, enforce = _b === void 0 ? false : _b;
+        var api = _a.api, bucket = _a.bucket, path = _a.path, schemas = _a.schemas, formatter = _a.formatter, level = _a.level, _b = _a.enforce, enforce = _b === void 0 ? false : _b;
         var _this = _super.call(this, { schemas: schemas, formatter: formatter, level: level }) || this;
         _this._api = api;
         _this._bucket = bucket;
+        _this._path = path;
         _this._enforce = enforce;
         return _this;
     }
     S3BucketSchemaHandler.prototype.handle = function (msg, meta) {
         return __awaiter(this, void 0, void 0, function () {
-            var date, year, month, day, timestamp, path, url, response;
+            var url, response;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -74,18 +75,12 @@ var S3BucketSchemaHandler = /** @class */ (function (_super) {
                             return [2 /*return*/];
                         }
                         if (this._enforce && !this.schemasContains(msg)) {
-                            throw new errors_1.InvalidSchemaError('InvalidSchemaError');
+                            throw new errors_1.InvalidSchemaError("InvalidSchemaError");
                         }
                         msg = this._formatter.format(msg, meta);
-                        date = new Date();
-                        year = date.getFullYear();
-                        month = (date.getMonth() + 1).toString().padStart(2, '0');
-                        day = date.getDate().toString().padStart(2, '0');
-                        timestamp = date.getTime();
-                        path = [this._bucket, year, month, day, timestamp].join('/');
-                        url = this._api.replace(/\/+$/g, '') + '/' + path;
+                        url = this._api.replace(/\/+$/g, '') + '/' + this._bucket + (this._path === undefined ? "" : '/' + this._path);
                         return [4 /*yield*/, fetch(url, {
-                                method: 'PUT',
+                                method: 'POST',
                                 mode: 'cors',
                                 cache: 'no-cache',
                                 headers: {

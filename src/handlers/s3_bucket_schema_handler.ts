@@ -10,6 +10,7 @@ import { SchemaHandler, ISchemaHandlerOptions } from '../handlers/schema_handler
 interface S3BucketSchemaHandlerOptions extends ISchemaHandlerOptions {
     api: string;
     bucket: string;
+    path?: string;
     enforce?: boolean;
 }
 
@@ -18,10 +19,12 @@ export class S3BucketSchemaHandler extends SchemaHandler implements IHandler {
     private _enforce: boolean;
     private _api: string;
     private _bucket: string;
+    private _path: string | undefined;
 
     constructor({
         api,
         bucket,
+        path,
         schemas,
         formatter,
         level,
@@ -31,6 +34,7 @@ export class S3BucketSchemaHandler extends SchemaHandler implements IHandler {
 
         this._api = api;
         this._bucket = bucket;
+        this._path = path;
         this._enforce = enforce;
     }
 
@@ -41,23 +45,15 @@ export class S3BucketSchemaHandler extends SchemaHandler implements IHandler {
         }
 
         if (this._enforce && !this.schemasContains(msg)) {
-            throw new InvalidSchemaError('InvalidSchemaError');
+            throw new InvalidSchemaError("InvalidSchemaError");
         }
 
         msg = this._formatter.format(msg, meta);
 
-        const date = new Date();
-        const year = date.getFullYear();
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const day = date.getDate().toString().padStart(2, '0');
-        const timestamp = date.getTime();
-
-        let path = [this._bucket, year, month, day, timestamp].join('/');
-
-        let url = this._api.replace(/\/+$/g, '') + '/' + path;
+        let url = this._api.replace(/\/+$/g, '') + '/' + this._bucket + (this._path === undefined ? "" : '/' + this._path);
 
         let response = await fetch(url, {
-            method: 'PUT', // *GET, POST, PUT, DELETE, etc.
+            method: 'POST', // *GET, POST, PUT, DELETE, etc.
             mode: 'cors', // no-cors, *cors, same-origin
             cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
             headers: {
