@@ -4,8 +4,7 @@ import { Logger } from './logger.js'
 
 import { JSONFormatter } from '../formatters/json_formatter.js';
 
-import { S3BucketSchemaHandler } from '../handlers/s3_bucket_schema_handler.js';
-import { pathToFileURL } from 'node:url';
+import { S3BucketHandler } from '../handlers/s3_bucket_handler.js';
 
 interface IRegexToolS3BucketLoggerOptions extends ILoggerOptions {
     api: string;
@@ -21,12 +20,10 @@ export class RegexToolS3BucketLogger extends Logger {
 
         const formatter = new JSONFormatter();
 
-        const handler = new S3BucketSchemaHandler({
+        const handler = new S3BucketHandler({
             api: api,
             bucket: bucket,
             path: path,
-            schemas: schemas,
-            enforce: enforce,
             formatter: formatter
         });
 

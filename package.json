@@ -4,8 +4,9 @@
   "description": "",
   "main": "./dist",
   "scripts": {
-    "build": "rm -rf ./dist/* && npx tsc",
-    "deploy": "cd test && npx webpack && cd ..",
+    "clean": "node ./scripts/clean.js",
+    "build": "npm run clean && npx tsc",
+    "deploy": "cd schema-logger-test && npx webpack && cp ./src/index.html /var/www/html/schema-logger && cd ..",
     "build-deploy": "npm run build && npm run deploy",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

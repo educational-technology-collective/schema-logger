@@ -1,51 +1,46 @@
 import {
+    IFormatter,
     IHandler,
+    IHandlerOptions,
     ILogMeta
 } from '../types.js';
 
-import { InvalidSchemaError, HTTPError } from '../errors'
+import { HTTPError } from '../errors'
+import { Level } from '../enums.js';
 
-import { SchemaHandler, ISchemaHandlerOptions } from '../handlers/schema_handler.js';
-
-interface IS3BucketSchemaHandlerOptions extends ISchemaHandlerOptions {
+interface IS3BucketHandlerOptions extends IHandlerOptions {
     api: string;
     bucket: string;
     path?: string;
-    enforce?: boolean;
 }
 
-export class S3BucketSchemaHandler extends SchemaHandler implements IHandler {
+export class S3BucketHandler implements IHandler {
 
-    private _enforce: boolean;
     private _api: string;
     private _bucket: string;
     private _path: string | undefined;
+    private _level: Level;
+    private _formatter: IFormatter;
 
     constructor({
         api,
         bucket,
         path,
-        schemas,
         formatter,
-        level,
-        enforce = false
-    }: IS3BucketSchemaHandlerOptions) {
-        super({ schemas, formatter, level });
+        level = Level.BASE
+    }: IS3BucketHandlerOptions) {
 
         this._api = api;
         this._bucket = bucket;
         this._path = path;
-        this._enforce = enforce;
+        this._level = level;
+        this._formatter = formatter;
     }
 
     async handle(msg: any, meta: ILogMeta) {
 
         if (meta.level < this._level) {
             return;
-        }
-
-        if (this._enforce && !this.schemasContains(msg)) {
-            throw new InvalidSchemaError("InvalidSchemaError");
         }
 
         msg = this._formatter.format(msg, meta);

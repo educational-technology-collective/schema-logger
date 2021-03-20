@@ -18,19 +18,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RegexToolS3BucketLogger = void 0;
 var logger_js_1 = require("./logger.js");
 var json_formatter_js_1 = require("../formatters/json_formatter.js");
-var s3_bucket_schema_handler_js_1 = require("../handlers/s3_bucket_schema_handler.js");
+var s3_bucket_handler_js_1 = require("../handlers/s3_bucket_handler.js");
 var RegexToolS3BucketLogger = /** @class */ (function (_super) {
     __extends(RegexToolS3BucketLogger, _super);
     function RegexToolS3BucketLogger(_a) {
         var api = _a.api, bucket = _a.bucket, _b = _a.path, path = _b === void 0 ? "" : _b, schemas = _a.schemas, enforce = _a.enforce, _c = _a.handlers, handlers = _c === void 0 ? [] : _c, _d = _a.errorHandler, errorHandler = _d === void 0 ? console.error : _d;
         var _this = this;
         var formatter = new json_formatter_js_1.JSONFormatter();
-        var handler = new s3_bucket_schema_handler_js_1.S3BucketSchemaHandler({
+        var handler = new s3_bucket_handler_js_1.S3BucketHandler({
             api: api,
             bucket: bucket,
             path: path,
-            schemas: schemas,
-            enforce: enforce,
             formatter: formatter
         });
         handlers.push(handler);
