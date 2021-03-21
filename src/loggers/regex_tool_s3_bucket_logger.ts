@@ -1,8 +1,10 @@
-import { ILoggerOptions} from '../types.js'
+import { ILoggerOptions, ILogMeta } from '../types.js'
 
-import { Logger } from './logger.js'
+import {Level} from '../enums.js'
 
-import { JSONFormatter } from '../formatters/json_formatter.js';
+import { LoggerAsync } from './logger_async.js'
+
+import { JSONDataFormatter } from '../formatters/json_formatter.js';
 
 import { S3BucketHandler } from '../handlers/s3_bucket_handler.js';
 
@@ -10,21 +12,21 @@ interface IRegexToolS3BucketLoggerOptions extends ILoggerOptions {
     api: string;
     bucket: string;
     path?: string;
-    schemas?: Array<object>;
-    enforce?: boolean;
+    level?: Level;
 }
 
-export class RegexToolS3BucketLogger extends Logger {
+export class RegexToolS3BucketLogger extends LoggerAsync {
 
-    constructor({ api, bucket, path = "", schemas, enforce, handlers = [], errorHandler = console.error }: IRegexToolS3BucketLoggerOptions) {
+    constructor({ api, bucket, path, level = Level.BASE, handlers = [], errorHandler }: IRegexToolS3BucketLoggerOptions) {
 
-        const formatter = new JSONFormatter();
+        const formatter = new JSONDataFormatter();
 
         const handler = new S3BucketHandler({
             api: api,
             bucket: bucket,
             path: path,
-            formatter: formatter
+            formatter: formatter,
+            level: level
         });
 
         handlers.push(handler);

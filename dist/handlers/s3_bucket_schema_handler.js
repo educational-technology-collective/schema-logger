@@ -53,72 +53,42 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.S3BucketSchemaHandler = void 0;
 var errors_1 = require("../errors");
-var schema_handler_js_1 = require("../handlers/schema_handler.js");
+var s3_bucket_handler_1 = require("../handlers/s3_bucket_handler");
+var ajv_1 = require("ajv");
+var ajv = new ajv_1.default();
 var S3BucketSchemaHandler = /** @class */ (function (_super) {
     __extends(S3BucketSchemaHandler, _super);
     function S3BucketSchemaHandler(_a) {
-        var api = _a.api, bucket = _a.bucket, path = _a.path, schemas = _a.schemas, formatter = _a.formatter, level = _a.level, _b = _a.enforce, enforce = _b === void 0 ? false : _b;
-        var _this = _super.call(this, { schemas: schemas, formatter: formatter, level: level }) || this;
-        _this._api = api;
-        _this._bucket = bucket;
-        _this._path = path;
+        var api = _a.api, bucket = _a.bucket, path = _a.path, _b = _a.schemas, schemas = _b === void 0 ? [] : _b, formatter = _a.formatter, level = _a.level, _c = _a.enforce, enforce = _c === void 0 ? false : _c;
+        var _this = _super.call(this, { api: api, bucket: bucket, path: path, formatter: formatter, level: level }) || this;
+        _this._validators = schemas.map(function (cur, idx, arr) { return ajv.compile(cur); });
         _this._enforce = enforce;
         return _this;
     }
     S3BucketSchemaHandler.prototype.handle = function (msg, meta) {
         return __awaiter(this, void 0, void 0, function () {
-            var url, response, headers_1, _a, _b, _c, _d;
-            var _e;
-            return __generator(this, function (_f) {
-                switch (_f.label) {
-                    case 0:
-                        if (meta.level < this._level) {
-                            return [2 /*return*/];
-                        }
-                        if (this._enforce && !this.schemasContains(msg)) {
-                            throw new errors_1.InvalidSchemaError("InvalidSchemaError");
-                        }
-                        msg = this._formatter.format(msg, meta);
-                        url = this._api.replace(/\/+$/g, '') + '/' + this._bucket + (this._path === undefined ? "" : '/' + this._path);
-                        return [4 /*yield*/, fetch(url, {
-                                method: 'POST',
-                                mode: 'cors',
-                                cache: 'no-cache',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                    // 'Content-Type': 'application/x-www-form-urlencoded',
-                                },
-                                redirect: 'follow',
-                                referrerPolicy: 'no-referrer',
-                                body: msg // body data type must match "Content-Type" header
-                            })];
-                    case 1:
-                        response = _f.sent();
-                        if (!!response.ok) return [3 /*break*/, 3];
-                        headers_1 = {};
-                        try {
-                            response.headers.forEach(function (value, key) {
-                                headers_1[key] = value;
-                            });
-                        }
-                        catch (_g) { }
-                        _a = errors_1.HTTPError.bind;
-                        _c = (_b = JSON).stringify;
-                        _e = {
-                            "response.status": response.status,
-                            "response.statusText": response.statusText
-                        };
-                        _d = "response.text()";
-                        return [4 /*yield*/, response.text()];
-                    case 2: throw new (_a.apply(errors_1.HTTPError, [void 0, _c.apply(_b, [(_e[_d] = _f.sent(),
-                                _e["response.headers"] = headers_1,
-                                _e)])]))();
-                    case 3: return [2 /*return*/, response];
+            return __generator(this, function (_a) {
+                if (this._enforce && !this.schemasContains(msg)) {
+                    throw new errors_1.InvalidSchemaError("InvalidSchemaError");
                 }
+                return [2 /*return*/, _super.prototype.handle.call(this, msg, meta)];
             });
         });
     };
+    S3BucketSchemaHandler.prototype.schemasContains = function (msg) {
+        for (var _i = 0, _a = this._validators; _i < _a.length; _i++) {
+            var validator = _a[_i];
+            if (validator(msg)) {
+                return true;
+            }
+        }
+        return false;
+    };
+    S3BucketSchemaHandler.prototype.addSchema = function (schema) {
+        this._validators.push(ajv.compile(schema));
+        return true;
+    };
     return S3BucketSchemaHandler;
-}(schema_handler_js_1.SchemaHandler));
+}(s3_bucket_handler_1.S3BucketHandler));
 exports.S3BucketSchemaHandler = S3BucketSchemaHandler;
 //# sourceMappingURL=s3_bucket_schema_handler.js.map

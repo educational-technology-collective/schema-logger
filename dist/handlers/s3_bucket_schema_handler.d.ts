@@ -1,17 +1,16 @@
 import { IHandler, ILogMeta } from '../types.js';
-import { SchemaHandler, ISchemaHandlerOptions } from '../handlers/schema_handler.js';
-interface IS3BucketSchemaHandlerOptions extends ISchemaHandlerOptions {
-    api: string;
-    bucket: string;
-    path?: string;
+import { S3BucketHandler, IS3BucketHandlerOptions } from '../handlers/s3_bucket_handler';
+import { JSONSchemaType } from 'ajv';
+interface IS3BucketSchemaHandlerOptions extends IS3BucketHandlerOptions {
+    schemas: Array<any>;
     enforce?: boolean;
 }
-export declare class S3BucketSchemaHandler extends SchemaHandler implements IHandler {
+export declare class S3BucketSchemaHandler extends S3BucketHandler implements IHandler {
     private _enforce;
-    private _api;
-    private _bucket;
-    private _path;
+    private _validators;
     constructor({ api, bucket, path, schemas, formatter, level, enforce }: IS3BucketSchemaHandlerOptions);
     handle(msg: any, meta: ILogMeta): Promise<Response | undefined>;
+    private schemasContains;
+    addSchema(schema: JSONSchemaType<unknown>): boolean;
 }
 export {};

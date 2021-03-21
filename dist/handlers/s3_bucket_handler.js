@@ -59,17 +59,17 @@ var S3BucketHandler = /** @class */ (function () {
                             return [2 /*return*/];
                         }
                         msg = this._formatter.format(msg, meta);
-                        url = this._api.replace(/\/+$/g, '') + '/' + this._bucket + (this._path === undefined ? "" : '/' + this._path);
+                        url = this._api.replace(/\/+$/g, "") + "/" + this._bucket + (this._path === undefined || this._path === "" ? "" : "/" + this._path);
                         return [4 /*yield*/, fetch(url, {
-                                method: 'POST',
-                                mode: 'cors',
-                                cache: 'no-cache',
+                                method: "POST",
+                                mode: "cors",
+                                cache: "no-cache",
                                 headers: {
-                                    'Content-Type': 'application/json'
-                                    // 'Content-Type': 'application/x-www-form-urlencoded',
+                                    "Content-Type": "application/json"
+                                    // "Content-Type": "application/x-www-form-urlencoded",
                                 },
-                                redirect: 'follow',
-                                referrerPolicy: 'no-referrer',
+                                redirect: "follow",
+                                referrerPolicy: "no-referrer",
                                 body: msg // body data type must match "Content-Type" header
                             })];
                     case 1:
@@ -81,7 +81,9 @@ var S3BucketHandler = /** @class */ (function () {
                                 headers_1[key] = value;
                             });
                         }
-                        catch (_g) { }
+                        catch (_g) {
+                            // forEach is iffy in the API. 
+                        }
                         _a = errors_1.HTTPError.bind;
                         _c = (_b = JSON).stringify;
                         _e = {

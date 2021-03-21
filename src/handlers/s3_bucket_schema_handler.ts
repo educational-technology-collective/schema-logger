@@ -5,85 +5,61 @@ import {
 
 import { InvalidSchemaError, HTTPError } from '../errors'
 
-import { SchemaHandler, ISchemaHandlerOptions } from '../handlers/schema_handler.js';
+import { S3BucketHandler, IS3BucketHandlerOptions} from '../handlers/s3_bucket_handler';
 
-interface IS3BucketSchemaHandlerOptions extends ISchemaHandlerOptions {
-    api: string;
-    bucket: string;
-    path?: string;
+import Ajv, { JSONSchemaType, ValidateFunction } from 'ajv';
+
+const ajv = new Ajv();
+
+interface IS3BucketSchemaHandlerOptions extends IS3BucketHandlerOptions {
+    schemas: Array<any>;
     enforce?: boolean;
 }
 
-export class S3BucketSchemaHandler extends SchemaHandler implements IHandler {
+export class S3BucketSchemaHandler extends S3BucketHandler implements IHandler {
 
     private _enforce: boolean;
-    private _api: string;
-    private _bucket: string;
-    private _path: string | undefined;
+    private _validators: Array<any>;
 
     constructor({
         api,
         bucket,
         path,
-        schemas,
+        schemas = [],
         formatter,
         level,
         enforce = false
     }: IS3BucketSchemaHandlerOptions) {
-        super({ schemas, formatter, level });
+        super({ api, bucket, path, formatter, level });
 
-        this._api = api;
-        this._bucket = bucket;
-        this._path = path;
+        this._validators = schemas.map((cur, idx, arr) => ajv.compile(cur));
         this._enforce = enforce;
     }
 
-    async handle(msg: any, meta: ILogMeta) {
-
-        if (meta.level < this._level) {
-            return;
-        }
+    public async handle(msg: any, meta: ILogMeta) {
 
         if (this._enforce && !this.schemasContains(msg)) {
             throw new InvalidSchemaError("InvalidSchemaError");
         }
 
-        msg = this._formatter.format(msg, meta);
+        return super.handle(msg, meta);
+    }
 
-        let url = this._api.replace(/\/+$/g, '') + '/' + this._bucket + (this._path === undefined ? "" : '/' + this._path);
+    private schemasContains(msg: any): boolean {
 
-        let response = await fetch(url, {
-            method: 'POST', // *GET, POST, PUT, DELETE, etc.
-            mode: 'cors', // no-cors, *cors, same-origin
-            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-            headers: {
-                'Content-Type': 'application/json'
-                // 'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            redirect: 'follow', // manual, *follow, error
-            referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-            body: msg // body data type must match "Content-Type" header
-        });
+        for (let validator of this._validators) {
 
-        if (!response.ok) {
-
-            let headers: { [key:string]: string } = {};
-
-            try  {
-                response.headers.forEach((value, key)=>{
-                    headers[key] = value;
-                });
+            if (validator(msg)){
+                return true;
             }
-            catch {}
-
-            throw new HTTPError(JSON.stringify({
-                "response.status": response.status,
-                "response.statusText": response.statusText,
-                "response.text()": await response.text(),
-                "response.headers": headers
-            }));
         }
 
-        return response;
+        return false;
+    }
+
+    public addSchema(schema: JSONSchemaType<unknown>): boolean {
+
+        this._validators.push(ajv.compile(schema));
+        return true;
     }
 }

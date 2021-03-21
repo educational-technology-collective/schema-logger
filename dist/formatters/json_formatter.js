@@ -1,18 +1,26 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JSONFormatter = void 0;
-var JSONFormatter = /** @class */ (function () {
-    function JSONFormatter() {
+exports.JSONDataFormatter = void 0;
+var enums_js_1 = require("../enums.js");
+var JSONDataFormatter = /** @class */ (function () {
+    function JSONDataFormatter() {
     }
-    JSONFormatter.prototype.format = function (msg, meta) {
+    JSONDataFormatter.prototype.format = function (msg, meta) {
         switch (typeof msg) {
             case 'string':
+                break;
             case 'object':
+                msg = {
+                    data: msg,
+                    "Date.now()": Date.now(),
+                    Level: enums_js_1.Level[meta.level]
+                };
+                break;
             default:
         }
         return JSON.stringify(msg);
     };
-    return JSONFormatter;
+    return JSONDataFormatter;
 }());
-exports.JSONFormatter = JSONFormatter;
+exports.JSONDataFormatter = JSONDataFormatter;
 //# sourceMappingURL=json_formatter.js.map

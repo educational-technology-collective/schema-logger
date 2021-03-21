@@ -11,7 +11,7 @@ import { Level } from '../enums.js'
 export class Logger implements ILogger {
 
     protected _handlers: IHandler[];
-    protected _errorHandler: ((msg: any) => void) | null;
+    protected _errorHandler: ((msg: any) => void) | undefined;
 
     constructor({ handlers = [], errorHandler = console.error }: ILoggerOptions) {
 

@@ -3,12 +3,12 @@ import {
     IHandler,
     IHandlerOptions,
     ILogMeta
-} from '../types.js';
+} from "../types.js";
 
-import { HTTPError } from '../errors'
-import { Level } from '../enums.js';
+import { HTTPError } from "../errors"
+import { Level } from "../enums.js";
 
-interface IS3BucketHandlerOptions extends IHandlerOptions {
+export interface IS3BucketHandlerOptions extends IHandlerOptions {
     api: string;
     bucket: string;
     path?: string;
@@ -45,31 +45,33 @@ export class S3BucketHandler implements IHandler {
 
         msg = this._formatter.format(msg, meta);
 
-        let url = this._api.replace(/\/+$/g, '') + '/' + this._bucket + (this._path === undefined ? "" : '/' + this._path);
+        let url = this._api.replace(/\/+$/g, "") + "/" + this._bucket + (this._path === undefined || this._path === "" ? "" : "/" + this._path);
 
         let response = await fetch(url, {
-            method: 'POST', // *GET, POST, PUT, DELETE, etc.
-            mode: 'cors', // no-cors, *cors, same-origin
-            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            method: "POST", // *GET, POST, PUT, DELETE, etc.
+            mode: "cors", // no-cors, *cors, same-origin
+            cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
             headers: {
-                'Content-Type': 'application/json'
-                // 'Content-Type': 'application/x-www-form-urlencoded',
+                "Content-Type": "application/json"
+                // "Content-Type": "application/x-www-form-urlencoded",
             },
-            redirect: 'follow', // manual, *follow, error
-            referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+            redirect: "follow", // manual, *follow, error
+            referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
             body: msg // body data type must match "Content-Type" header
         });
 
         if (!response.ok) {
 
-            let headers: { [key:string]: string } = {};
+            let headers: { [key: string]: string } = {};
 
-            try  {
-                response.headers.forEach((value, key)=>{
+            try {
+                response.headers.forEach((value: string, key: string) => {
                     headers[key] = value;
                 });
             }
-            catch {}
+            catch {
+                // forEach is iffy in the API. 
+            }
 
             throw new HTTPError(JSON.stringify({
                 "response.status": response.status,

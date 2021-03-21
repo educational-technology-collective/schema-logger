@@ -33,8 +33,9 @@ export abstract class SchemaHandler implements IHandler {
 
         for (let validator of this._validators) {
 
-            if (validator(msg))
+            if (validator(msg)){
                 return true;
+            }
         }
 
         return false;

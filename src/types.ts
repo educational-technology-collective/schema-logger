@@ -5,7 +5,7 @@ export interface ILogger {
 
 export interface ILoggerOptions {
     handlers?: IHandler[];
-    errorHandler?: ((msg: any) => void) | null;
+    errorHandler?: ((msg: any) => void);
 }
 
 export interface ILogMeta {

@@ -14,8 +14,9 @@ var SchemaHandler = /** @class */ (function () {
     SchemaHandler.prototype.schemasContains = function (msg) {
         for (var _i = 0, _a = this._validators; _i < _a.length; _i++) {
             var validator = _a[_i];
-            if (validator(msg))
+            if (validator(msg)) {
                 return true;
+            }
         }
         return false;
     };
