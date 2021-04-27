@@ -51,44 +51,44 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.S3BucketSchemaHandler = void 0;
-var errors_1 = require("../errors");
-var s3_bucket_handler_1 = require("../handlers/s3_bucket_handler");
-var ajv_1 = require("ajv");
-var ajv = new ajv_1.default();
-var S3BucketSchemaHandler = /** @class */ (function (_super) {
-    __extends(S3BucketSchemaHandler, _super);
-    function S3BucketSchemaHandler(_a) {
-        var api = _a.api, bucket = _a.bucket, path = _a.path, _b = _a.schemas, schemas = _b === void 0 ? [] : _b, formatter = _a.formatter, level = _a.level, _c = _a.enforce, enforce = _c === void 0 ? false : _c;
-        var _this = _super.call(this, { api: api, bucket: bucket, path: path, formatter: formatter, level: level }) || this;
-        _this._validators = schemas.map(function (cur, idx, arr) { return ajv.compile(cur); });
-        _this._enforce = enforce;
-        return _this;
+exports.SimpleLogger = void 0;
+var enums_1 = require("../enums");
+var logger_async_1 = require("./logger_async");
+var SimpleLogger = /** @class */ (function (_super) {
+    __extends(SimpleLogger, _super);
+    function SimpleLogger(_a) {
+        var _b = _a.handlers, handlers = _b === void 0 ? [] : _b;
+        return _super.call(this, { handlers: handlers }) || this;
     }
-    S3BucketSchemaHandler.prototype.handle = function (msg, meta) {
+    SimpleLogger.prototype.error = function (msg) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                if (this._enforce && !this.schemasContains(msg)) {
-                    throw new errors_1.InvalidSchemaError("InvalidSchemaError");
-                }
-                return [2 /*return*/, _super.prototype.handle.call(this, msg, meta)];
+                return [2 /*return*/, this.log(msg, { level: enums_1.Level.ERROR })];
             });
         });
     };
-    S3BucketSchemaHandler.prototype.schemasContains = function (msg) {
-        for (var _i = 0, _a = this._validators; _i < _a.length; _i++) {
-            var validator = _a[_i];
-            if (validator(msg)) {
-                return true;
-            }
-        }
-        return false;
+    SimpleLogger.prototype.warn = function (msg) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.log(msg, { level: enums_1.Level.WARN })];
+            });
+        });
     };
-    S3BucketSchemaHandler.prototype.addSchema = function (schema) {
-        this._validators.push(ajv.compile(schema));
-        return true;
+    SimpleLogger.prototype.info = function (msg) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.log(msg, { level: enums_1.Level.INFO })];
+            });
+        });
     };
-    return S3BucketSchemaHandler;
-}(s3_bucket_handler_1.S3BucketHandler));
-exports.S3BucketSchemaHandler = S3BucketSchemaHandler;
-//# sourceMappingURL=s3_bucket_schema_handler.js.map
+    SimpleLogger.prototype.debug = function (msg) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.log(msg, { level: enums_1.Level.DEBUG })];
+            });
+        });
+    };
+    return SimpleLogger;
+}(logger_async_1.LoggerAsync));
+exports.SimpleLogger = SimpleLogger;
+//# sourceMappingURL=simple_logger_async.js.map

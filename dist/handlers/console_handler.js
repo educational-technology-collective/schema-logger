@@ -1,19 +1,4 @@
 "use strict";
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -51,29 +36,29 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ConsoleSchemaHandler = void 0;
-var errors_1 = require("../errors");
-var schema_handler_js_1 = require("../handlers/schema_handler.js");
-var ConsoleSchemaHandler = /** @class */ (function (_super) {
-    __extends(ConsoleSchemaHandler, _super);
-    function ConsoleSchemaHandler(_a) {
-        var _b = _a.schemas, schemas = _b === void 0 ? [] : _b, formatter = _a.formatter, level = _a.level, enforce = _a.enforce;
-        var _this = _super.call(this, { schemas: schemas, formatter: formatter, level: level }) || this;
-        _this._enforce = enforce;
-        return _this;
+exports.ConsoleHandler = void 0;
+var enums_js_1 = require("../enums.js");
+var ConsoleHandler = /** @class */ (function () {
+    function ConsoleHandler(_a) {
+        var formatter = _a.formatter;
+        this.formatter = formatter;
     }
-    ConsoleSchemaHandler.prototype.handle = function (msg, meta) {
+    ConsoleHandler.prototype.handle = function (msg, meta) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                if (this._enforce && !this.schemasContains(msg)) {
-                    throw new errors_1.InvalidSchemaError('InvalidSchemaError');
+                msg = this.formatter.format(msg);
+                meta = meta;
+                switch (meta.level) {
+                    case enums_js_1.Level.ERROR:
+                        console.error(msg);
+                    default:
+                        console.log(msg);
                 }
-                console.log(msg);
                 return [2 /*return*/];
             });
         });
     };
-    return ConsoleSchemaHandler;
-}(schema_handler_js_1.SchemaHandler));
-exports.ConsoleSchemaHandler = ConsoleSchemaHandler;
+    return ConsoleHandler;
+}());
+exports.ConsoleHandler = ConsoleHandler;
 //# sourceMappingURL=console_handler.js.map

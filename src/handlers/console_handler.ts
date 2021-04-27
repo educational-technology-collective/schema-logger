@@ -1,32 +1,30 @@
 import {
+    IFormatter,
     IHandler,
+    IHandlerOptions,
     ILogMeta
 } from '../types.js';
 
-import { InvalidSchemaError } from '../errors'
+import { Level } from '../enums.js';
 
-import { SchemaHandler, ISchemaHandlerOptions } from '../handlers/schema_handler.js';
+export class ConsoleHandler implements IHandler {
 
-interface IConsoleSchemaHandlerOptions extends ISchemaHandlerOptions {
-    enforce: boolean;
-}
+    private formatter: IFormatter;
 
-export class ConsoleSchemaHandler extends SchemaHandler implements IHandler {
-
-    private _enforce: boolean;
-
-    constructor({ schemas = [], formatter, level, enforce }: IConsoleSchemaHandlerOptions) {
-        super({ schemas, formatter, level });
-
-        this._enforce = enforce;
+    constructor({ formatter }: IHandlerOptions) {
+        this.formatter = formatter;
     }
 
-    public async handle(msg: any, meta: ILogMeta) {
+    public async handle(msg: any, meta: any) {
 
-        if (this._enforce && !this.schemasContains(msg)) {
-            throw new InvalidSchemaError('InvalidSchemaError');
+        msg = this.formatter.format(msg);
+        meta = (meta as ILogMeta);
+
+        switch(meta.level) {
+            case Level.ERROR:
+                console.error(msg);
+            default:
+                console.log(msg);
         }
-
-        console.log(msg);
     }
 }

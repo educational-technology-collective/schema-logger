@@ -38,52 +38,40 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.S3BucketHandler = void 0;
 var errors_1 = require("../errors");
-var enums_js_1 = require("../enums.js");
 var S3BucketHandler = /** @class */ (function () {
     function S3BucketHandler(_a) {
-        var api = _a.api, bucket = _a.bucket, path = _a.path, formatter = _a.formatter, _b = _a.level, level = _b === void 0 ? enums_js_1.Level.BASE : _b;
-        this._api = api;
-        this._bucket = bucket;
-        this._path = path;
-        this._level = level;
-        this._formatter = formatter;
+        var formatter = _a.formatter, api = _a.api, bucket = _a.bucket, path = _a.path;
+        this.formatter = formatter;
+        this.api = api;
+        this.bucket = bucket;
+        this.path = (typeof path != "string" ? "" : path);
     }
-    S3BucketHandler.prototype.handle = function (msg, meta) {
+    S3BucketHandler.prototype.setPath = function (path) {
+        this.path = path;
+    };
+    S3BucketHandler.prototype.handle = function (msg) {
         return __awaiter(this, void 0, void 0, function () {
-            var url, response, headers_1, _a, _b, _c, _d;
+            var url, response, _a, _b, _c, _d;
             var _e;
             return __generator(this, function (_f) {
                 switch (_f.label) {
                     case 0:
-                        if (meta.level < this._level) {
-                            return [2 /*return*/];
-                        }
-                        msg = this._formatter.format(msg, meta);
-                        url = this._api.replace(/\/+$/g, "") + "/" + this._bucket + (this._path === undefined || this._path === "" ? "" : "/" + this._path);
+                        msg = this.formatter.format(msg);
+                        url = this.api.replace(/\/+$/g, "") + "/" + this.bucket + "/" + this.path;
                         return [4 /*yield*/, fetch(url, {
                                 method: "POST",
                                 mode: "cors",
                                 cache: "no-cache",
                                 headers: {
-                                    "Content-Type": "application/json"
-                                    // "Content-Type": "application/x-www-form-urlencoded",
+                                    "Content-Type": this.formatter.mediaType
                                 },
                                 redirect: "follow",
                                 referrerPolicy: "no-referrer",
-                                body: msg // body data type must match "Content-Type" header
+                                body: msg
                             })];
                     case 1:
                         response = _f.sent();
-                        if (!!response.ok) return [3 /*break*/, 3];
-                        headers_1 = {};
-                        try {
-                            response.headers.forEach(function (value, key) {
-                                headers_1[key] = value;
-                            });
-                        }
-                        catch (_g) {
-                            // forEach is iffy in the API. 
-                        }
+                        if (!(!response.ok || response.status != 200)) return [3 /*break*/, 3];
                         _a = errors_1.HTTPError.bind;
                         _c = (_b = JSON).stringify;
                         _e = {
@@ -93,7 +81,6 @@ var S3BucketHandler = /** @class */ (function () {
                         _d = "response.text()";
                         return [4 /*yield*/, response.text()];
                     case 2: throw new (_a.apply(errors_1.HTTPError, [void 0, _c.apply(_b, [(_e[_d] = _f.sent(),
-                                _e["response.headers"] = headers_1,
                                 _e)])]))();
                     case 3: return [2 /*return*/, response];
                 }

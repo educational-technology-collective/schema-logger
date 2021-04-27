@@ -1,64 +1,31 @@
 
-import {
-    IHandler,
-    ILogMeta,
-    ILogger,
-    ILoggerOptions
-} from '../types';
+import { IHandler, ILogger } from "../types";
 
-import { Level } from '../enums.js'
+interface ILoggerAsyncOptions {
+    handlers: Array<IHandler>;
+}
 
 export class LoggerAsync implements ILogger {
 
-    protected _handlers: IHandler[];
-    protected _errorHandler: ((msg: any) => void) | undefined;
+    private handlers: Array<IHandler>;
 
-    constructor({ handlers = [], errorHandler }: ILoggerOptions) {
-
-        this._handlers = handlers;
-        this._errorHandler = errorHandler;
+    constructor({ handlers = [] }: ILoggerAsyncOptions) {
+        this.handlers = handlers;
     }
 
-    async log(msg: any, meta: ILogMeta = { level: Level.BASE }) {
+    async log(msg: any, meta?: any): Promise<any> {
 
-        try {
-            const promises = [];
+        let promises: Array<Promise<any>> = [];
 
-            for (let handler of this._handlers) {
-                promises.push(handler.handle(msg, meta));
-            }
-    
-            return await Promise.all(promises);
+        for (let handler of this.handlers) {
+            promises.push(handler.handle(msg, meta));
         }
-        catch(e) {
-
-            if (typeof this._errorHandler === 'function') {
-                this._errorHandler(e);
-            }
-
-            throw(e);
-        }
-    }
-
-    async error(msg: any) {
-        return await this.log(msg, { level: Level.ERROR });
-    }
-
-    async warn(msg: any) {
-        return await this.log(msg, { level: Level.WARN });
-    }
-
-    async info(msg: any) {
-        return await this.log(msg, { level: Level.INFO });
-    }
-
-    async debug(msg: any) {
-        return await this.log(msg, { level: Level.DEBUG });
+        
+        return Promise.all(promises);
     }
 
     addHandler(handler: IHandler) {
 
-        this._handlers.push(handler);
+        this.handlers.push(handler);
     }
 }
-

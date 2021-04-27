@@ -1,12 +1,11 @@
-import { IHandler, ILogMeta, ILogger, ILoggerOptions } from '../types';
+import { IHandler, ILogger } from "../types";
+interface ILoggerAsyncOptions {
+    handlers: Array<IHandler>;
+}
 export declare class LoggerAsync implements ILogger {
-    protected _handlers: IHandler[];
-    protected _errorHandler: ((msg: any) => void) | undefined;
-    constructor({ handlers, errorHandler }: ILoggerOptions);
-    log(msg: any, meta?: ILogMeta): Promise<any[]>;
-    error(msg: any): Promise<any[]>;
-    warn(msg: any): Promise<any[]>;
-    info(msg: any): Promise<any[]>;
-    debug(msg: any): Promise<any[]>;
+    private handlers;
+    constructor({ handlers }: ILoggerAsyncOptions);
+    log(msg: any, meta?: any): Promise<any>;
     addHandler(handler: IHandler): void;
 }
+export {};

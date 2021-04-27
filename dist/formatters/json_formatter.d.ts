@@ -1,4 +1,6 @@
-import { ILogMeta, IFormatter } from '../types.js';
-export declare class JSONDataFormatter implements IFormatter {
-    format(msg: any, meta: ILogMeta): string;
+import { IFormatter } from '../types.js';
+export declare class JSONFormatter implements IFormatter {
+    mediaType: string;
+    constructor();
+    format(msg: any): string;
 }

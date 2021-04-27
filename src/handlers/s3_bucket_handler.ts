@@ -1,12 +1,10 @@
 import {
     IFormatter,
     IHandler,
-    IHandlerOptions,
-    ILogMeta
+    IHandlerOptions
 } from "../types.js";
 
-import { HTTPError } from "../errors"
-import { Level } from "../enums.js";
+import { HTTPError } from "../errors";
 
 export interface IS3BucketHandlerOptions extends IHandlerOptions {
     api: string;
@@ -16,68 +14,52 @@ export interface IS3BucketHandlerOptions extends IHandlerOptions {
 
 export class S3BucketHandler implements IHandler {
 
-    private _api: string;
-    private _bucket: string;
-    private _path: string | undefined;
-    private _level: Level;
-    private _formatter: IFormatter;
+    private api: string;
+    private bucket: string;
+    private path: string | undefined;
+    private formatter: IFormatter;
 
     constructor({
+        formatter,
         api,
         bucket,
-        path,
-        formatter,
-        level = Level.BASE
+        path
     }: IS3BucketHandlerOptions) {
 
-        this._api = api;
-        this._bucket = bucket;
-        this._path = path;
-        this._level = level;
-        this._formatter = formatter;
+        this.formatter = formatter;
+        this.api = api;
+        this.bucket = bucket;
+        this.path = (typeof path != "string" ? "" : path);
     }
 
-    async handle(msg: any, meta: ILogMeta) {
+    setPath(path: string) {
+        this.path = path;
+    }
 
-        if (meta.level < this._level) {
-            return;
-        }
+    async handle(msg: any) {
 
-        msg = this._formatter.format(msg, meta);
+        msg = this.formatter.format(msg);
 
-        let url = this._api.replace(/\/+$/g, "") + "/" + this._bucket + (this._path === undefined || this._path === "" ? "" : "/" + this._path);
+        let url = this.api.replace(/\/+$/g, "") + "/" + this.bucket + "/" + this.path;
 
         let response = await fetch(url, {
-            method: "POST", // *GET, POST, PUT, DELETE, etc.
-            mode: "cors", // no-cors, *cors, same-origin
-            cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+            method: "POST",
+            mode: "cors",
+            cache: "no-cache",
             headers: {
-                "Content-Type": "application/json"
-                // "Content-Type": "application/x-www-form-urlencoded",
+                "Content-Type": this.formatter.mediaType
             },
-            redirect: "follow", // manual, *follow, error
-            referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-            body: msg // body data type must match "Content-Type" header
+            redirect: "follow",
+            referrerPolicy: "no-referrer",
+            body: msg
         });
 
-        if (!response.ok) {
-
-            let headers: { [key: string]: string } = {};
-
-            try {
-                response.headers.forEach((value: string, key: string) => {
-                    headers[key] = value;
-                });
-            }
-            catch {
-                // forEach is iffy in the API. 
-            }
+        if (!response.ok || response.status != 200) {
 
             throw new HTTPError(JSON.stringify({
                 "response.status": response.status,
                 "response.statusText": response.statusText,
-                "response.text()": await response.text(),
-                "response.headers": headers
+                "response.text()": await response.text()
             }));
         }
 

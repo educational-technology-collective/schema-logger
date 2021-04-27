@@ -1,12 +1,13 @@
-import { IHandler, ILogMeta, ILogger, ILoggerOptions } from '../types';
+import { IHandler, ILogger } from "../types";
+export interface ILoggerOptions {
+    handlers: Array<IHandler>;
+    errorHandler(e: any): void;
+}
 export declare class Logger implements ILogger {
-    protected _handlers: IHandler[];
-    protected _errorHandler: ((msg: any) => void) | undefined;
+    private handlers;
+    private errorHandler;
+    private messages;
     constructor({ handlers, errorHandler }: ILoggerOptions);
-    log(msg: any, meta?: ILogMeta): void;
-    error(msg: any): void;
-    warn(msg: any): void;
-    info(msg: any): void;
-    debug(msg: any): void;
+    log(msg: any, meta?: any): void;
     addHandler(handler: IHandler): void;
 }

@@ -1,11 +1,6 @@
-import { IHandler, ILogMeta } from '../types.js';
-import { SchemaHandler, ISchemaHandlerOptions } from '../handlers/schema_handler.js';
-interface IConsoleSchemaHandlerOptions extends ISchemaHandlerOptions {
-    enforce: boolean;
+import { IHandler, IHandlerOptions } from '../types.js';
+export declare class ConsoleHandler implements IHandler {
+    private formatter;
+    constructor({ formatter }: IHandlerOptions);
+    handle(msg: any, meta: any): Promise<void>;
 }
-export declare class ConsoleSchemaHandler extends SchemaHandler implements IHandler {
-    private _enforce;
-    constructor({ schemas, formatter, level, enforce }: IConsoleSchemaHandlerOptions);
-    handle(msg: any, meta: ILogMeta): Promise<void>;
-}
-export {};

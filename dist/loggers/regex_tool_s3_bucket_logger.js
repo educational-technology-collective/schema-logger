@@ -16,28 +16,34 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RegexToolS3BucketLogger = void 0;
-var enums_js_1 = require("../enums.js");
-var logger_async_js_1 = require("./logger_async.js");
-var json_formatter_js_1 = require("../formatters/json_formatter.js");
-var s3_bucket_handler_js_1 = require("../handlers/s3_bucket_handler.js");
+var json_formatter_1 = require("../formatters/json_formatter");
+var s3_bucket_handler_1 = require("../handlers/s3_bucket_handler");
+var logger_1 = require("./logger");
 var RegexToolS3BucketLogger = /** @class */ (function (_super) {
     __extends(RegexToolS3BucketLogger, _super);
     function RegexToolS3BucketLogger(_a) {
-        var api = _a.api, bucket = _a.bucket, path = _a.path, _b = _a.level, level = _b === void 0 ? enums_js_1.Level.BASE : _b, _c = _a.handlers, handlers = _c === void 0 ? [] : _c, errorHandler = _a.errorHandler;
+        var api = _a.api, bucket = _a.bucket, path = _a.path, _b = _a.errorHandler, errorHandler = _b === void 0 ? console.error : _b;
         var _this = this;
-        var formatter = new json_formatter_js_1.JSONDataFormatter();
-        var handler = new s3_bucket_handler_js_1.S3BucketHandler({
+        var formatter = new json_formatter_1.JSONFormatter();
+        var handler = new s3_bucket_handler_1.S3BucketHandler({
+            formatter: formatter,
             api: api,
             bucket: bucket,
-            path: path,
-            formatter: formatter,
-            level: level
+            path: path
         });
-        handlers.push(handler);
-        _this = _super.call(this, { handlers: handlers, errorHandler: errorHandler }) || this;
+        _this = _super.call(this, { handlers: [handler], errorHandler: errorHandler }) || this;
+        _this.seq = 0;
         return _this;
     }
+    RegexToolS3BucketLogger.prototype.log = function (msg, meta) {
+        msg = {
+            data: msg,
+            seq: this.seq
+        };
+        _super.prototype.log.call(this, msg);
+        this.seq = this.seq + 1;
+    };
     return RegexToolS3BucketLogger;
-}(logger_async_js_1.LoggerAsync));
+}(logger_1.Logger));
 exports.RegexToolS3BucketLogger = RegexToolS3BucketLogger;
 //# sourceMappingURL=regex_tool_s3_bucket_logger.js.map

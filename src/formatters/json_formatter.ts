@@ -1,24 +1,23 @@
-import { ILogMeta, IFormatter } from '../types.js';
+import { IFormatter } from '../types.js';
 
-import { Level } from '../enums.js';
 
-export class JSONDataFormatter implements IFormatter {
+export class JSONFormatter implements IFormatter {
 
-    format(msg: any, meta: ILogMeta) {
+    public mediaType: string;
+
+    constructor() {
+        this.mediaType = "application/json";
+    }
+
+    format(msg: any) {
 
         switch (typeof msg) {
             case 'string':
-                break;
+                return msg;
             case 'object':
-                msg = {
-                    data: msg,
-                    "Date.now()": Date.now(),
-                    Level: Level[meta.level]
-                }
-                break;
+                return JSON.stringify(msg);
             default:
+                return "";
         }
-
-        return JSON.stringify(msg);
     }
 }

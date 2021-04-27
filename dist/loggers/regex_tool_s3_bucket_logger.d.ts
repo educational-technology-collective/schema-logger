@@ -1,13 +1,13 @@
-import { ILoggerOptions } from '../types.js';
-import { Level } from '../enums.js';
-import { LoggerAsync } from './logger_async.js';
-interface IRegexToolS3BucketLoggerOptions extends ILoggerOptions {
+import { Logger } from './logger';
+interface IRegexToolS3BucketLoggerOptions {
     api: string;
     bucket: string;
     path?: string;
-    level?: Level;
+    errorHandler?(e: any): void;
 }
-export declare class RegexToolS3BucketLogger extends LoggerAsync {
-    constructor({ api, bucket, path, level, handlers, errorHandler }: IRegexToolS3BucketLoggerOptions);
+export declare class RegexToolS3BucketLogger extends Logger {
+    private seq;
+    constructor({ api, bucket, path, errorHandler }: IRegexToolS3BucketLoggerOptions);
+    log(msg: any, meta?: any): void;
 }
 export {};

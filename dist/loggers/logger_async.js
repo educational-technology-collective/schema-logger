@@ -37,81 +37,26 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LoggerAsync = void 0;
-var enums_js_1 = require("../enums.js");
 var LoggerAsync = /** @class */ (function () {
     function LoggerAsync(_a) {
-        var _b = _a.handlers, handlers = _b === void 0 ? [] : _b, errorHandler = _a.errorHandler;
-        this._handlers = handlers;
-        this._errorHandler = errorHandler;
+        var _b = _a.handlers, handlers = _b === void 0 ? [] : _b;
+        this.handlers = handlers;
     }
     LoggerAsync.prototype.log = function (msg, meta) {
-        if (meta === void 0) { meta = { level: enums_js_1.Level.BASE }; }
         return __awaiter(this, void 0, void 0, function () {
-            var promises, _i, _a, handler, e_1;
+            var promises, _i, _a, handler;
             return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        _b.trys.push([0, 2, , 3]);
-                        promises = [];
-                        for (_i = 0, _a = this._handlers; _i < _a.length; _i++) {
-                            handler = _a[_i];
-                            promises.push(handler.handle(msg, meta));
-                        }
-                        return [4 /*yield*/, Promise.all(promises)];
-                    case 1: return [2 /*return*/, _b.sent()];
-                    case 2:
-                        e_1 = _b.sent();
-                        if (typeof this._errorHandler === 'function') {
-                            this._errorHandler(e_1);
-                        }
-                        throw (e_1);
-                    case 3: return [2 /*return*/];
+                promises = [];
+                for (_i = 0, _a = this.handlers; _i < _a.length; _i++) {
+                    handler = _a[_i];
+                    promises.push(handler.handle(msg, meta));
                 }
-            });
-        });
-    };
-    LoggerAsync.prototype.error = function (msg) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.log(msg, { level: enums_js_1.Level.ERROR })];
-                    case 1: return [2 /*return*/, _a.sent()];
-                }
-            });
-        });
-    };
-    LoggerAsync.prototype.warn = function (msg) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.log(msg, { level: enums_js_1.Level.WARN })];
-                    case 1: return [2 /*return*/, _a.sent()];
-                }
-            });
-        });
-    };
-    LoggerAsync.prototype.info = function (msg) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.log(msg, { level: enums_js_1.Level.INFO })];
-                    case 1: return [2 /*return*/, _a.sent()];
-                }
-            });
-        });
-    };
-    LoggerAsync.prototype.debug = function (msg) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.log(msg, { level: enums_js_1.Level.DEBUG })];
-                    case 1: return [2 /*return*/, _a.sent()];
-                }
+                return [2 /*return*/, Promise.all(promises)];
             });
         });
     };
     LoggerAsync.prototype.addHandler = function (handler) {
-        this._handlers.push(handler);
+        this.handlers.push(handler);
     };
     return LoggerAsync;
 }());
