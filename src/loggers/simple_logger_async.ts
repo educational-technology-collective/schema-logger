@@ -1,16 +1,35 @@
 
 import {
     IHandler,
+    ILogger,
     ILoggerOptions
 } from '../types';
 
 import { Level } from '../enums';
-import { LoggerAsync } from './logger_async';
 
-export class SimpleLogger extends LoggerAsync {
+export class SimpleLogger implements ILogger {
+
+    private handlers: Array<IHandler>;
 
     constructor({ handlers = [] }: ILoggerOptions) {
-        super({ handlers });
+
+        this.handlers = handlers;
+    }
+
+    addHandler(handler: IHandler) {
+
+        this.handlers.push(handler);
+    }
+
+    async log(msg: any, meta?: any): Promise<any> {
+
+        let promises: Array<Promise<any>> = [];
+
+        for (let handler of this.handlers) {
+            promises.push(handler.handle(msg, meta));
+        }
+        
+        return Promise.all(promises);
     }
 
     async error(msg: any) {
