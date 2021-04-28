@@ -30,6 +30,7 @@ export class S3BucketHandler implements IHandler {
         this.api = api;
         this.bucket = bucket;
         this.path = (typeof path != "string" ? "" : path);
+
     }
 
     setPath(path: string) {
@@ -38,11 +39,14 @@ export class S3BucketHandler implements IHandler {
 
     async handle(msg: any) {
 
+        let url: string;
+        let response: Response;
+
         msg = this.formatter.format(msg);
 
-        let url = this.api.replace(/\/+$/g, "") + "/" + this.bucket + "/" + this.path;
+        url = this.api.replace(/\/+$/g, "") + "/" + this.bucket + "/" + this.path;
 
-        let response = await fetch(url, {
+        response = await fetch(url, {
             method: "POST",
             mode: "cors",
             cache: "no-cache",
@@ -55,7 +59,7 @@ export class S3BucketHandler implements IHandler {
         });
 
         if (!response.ok || response.status != 200) {
-
+    
             throw new HTTPError(JSON.stringify({
                 "response.status": response.status,
                 "response.statusText": response.statusText,
@@ -64,5 +68,8 @@ export class S3BucketHandler implements IHandler {
         }
 
         return response;
+
     }
+
+
 }

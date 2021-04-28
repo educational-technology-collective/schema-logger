@@ -1,6 +1,6 @@
 import { Level } from './enums.js';
 export interface ILoggerOptions {
-    handlers?: IHandler[];
+    handlers?: Array<IHandler>;
 }
 export interface ILogMeta {
     level: Level;

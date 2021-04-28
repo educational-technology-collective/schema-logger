@@ -1,7 +1,7 @@
 import { Level } from './enums.js'
 
 export interface ILoggerOptions {
-    handlers?: IHandler[];
+    handlers?: Array<IHandler>;
 }
 
 export interface ILogMeta {
@@ -15,6 +15,7 @@ export interface ILoggerAsync {
 export interface ILogger {
     log(msg: any, meta?: any): void;
 }
+
 
 export interface IHandler {
     handle(msg: any, meta?: any): Promise<any>;
