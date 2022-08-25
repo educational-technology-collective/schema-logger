@@ -1,11 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.JSONFormatter = void 0;
-var JSONFormatter = /** @class */ (function () {
-    function JSONFormatter() {
+export class JSONFormatter {
+    mediaType;
+    constructor() {
         this.mediaType = "application/json";
     }
-    JSONFormatter.prototype.format = function (msg) {
+    format(msg) {
         switch (typeof msg) {
             case 'string':
                 return msg;
@@ -14,8 +12,6 @@ var JSONFormatter = /** @class */ (function () {
             default:
                 return "";
         }
-    };
-    return JSONFormatter;
-}());
-exports.JSONFormatter = JSONFormatter;
+    }
+}
 //# sourceMappingURL=json_formatter.js.map

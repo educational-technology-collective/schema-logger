@@ -15,12 +15,12 @@ export class ConsoleHandler implements IHandler {
         this.formatter = formatter;
     }
 
-    public async handle(msg: any, meta: any) {
+    public async handle(msg: any, meta: any): Promise<void> {
 
         msg = this.formatter.format(msg);
         meta = (meta as ILogMeta);
 
-        switch(meta.level) {
+        switch (meta.level) {
             case Level.ERROR:
                 console.error(msg);
             default:

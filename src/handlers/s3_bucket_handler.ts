@@ -4,7 +4,7 @@ import {
     IHandlerOptions
 } from "../types.js";
 
-import { HTTPError } from "../errors";
+import { HTTPError } from "../errors/index.js";
 
 export interface IS3BucketHandlerOptions extends IHandlerOptions {
     api: string;

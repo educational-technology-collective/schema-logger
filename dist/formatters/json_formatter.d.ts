@@ -4,3 +4,4 @@ export declare class JSONFormatter implements IFormatter {
     constructor();
     format(msg: any): string;
 }
+//# sourceMappingURL=json_formatter.d.ts.map

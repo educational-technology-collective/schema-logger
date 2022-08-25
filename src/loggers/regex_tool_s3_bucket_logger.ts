@@ -1,8 +1,8 @@
 
-import { Level } from '../enums'
-import { JSONFormatter } from '../formatters/json_formatter';
-import { S3BucketHandler } from '../handlers/s3_bucket_handler';
-import { IHandler, IHandlerOptions, ILogger, ILoggerOptions } from '../types';
+import { Level } from '../enums.js'
+import { JSONFormatter } from '../formatters/json_formatter.js';
+import { S3BucketHandler } from '../handlers/s3_bucket_handler.js';
+import { IHandler, IHandlerOptions, ILogger, ILoggerOptions } from '../types.js';
 
 interface IRegexToolS3BucketLoggerOptions extends ILoggerOptions {
     api: string;

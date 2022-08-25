@@ -7,3 +7,4 @@ export declare class LevelError extends Error {
 export declare class HTTPError extends Error {
     constructor(...params: any);
 }
+//# sourceMappingURL=index.d.ts.map

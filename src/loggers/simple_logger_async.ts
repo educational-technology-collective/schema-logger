@@ -3,9 +3,9 @@ import {
     IHandler,
     ILogger,
     ILoggerOptions
-} from '../types';
+} from '../types.js';
 
-import { Level } from '../enums';
+import { Level } from '../enums.js';
 
 export class SimpleLogger implements ILogger {
 

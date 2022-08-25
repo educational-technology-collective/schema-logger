@@ -4,3 +4,4 @@ export declare class ConsoleHandler implements IHandler {
     constructor({ formatter }: IHandlerOptions);
     handle(msg: any, meta: any): Promise<void>;
 }
+//# sourceMappingURL=console_handler.d.ts.map

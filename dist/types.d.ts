@@ -21,3 +21,4 @@ export interface IFormatter {
     format(msg: any, meta?: ILogMeta): any;
     mediaType: string;
 }
+//# sourceMappingURL=types.d.ts.map

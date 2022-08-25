@@ -13,3 +13,4 @@ export declare class S3BucketHandler implements IHandler {
     setPath(path: string): void;
     handle(msg: any): Promise<Response>;
 }
+//# sourceMappingURL=s3_bucket_handler.d.ts.map

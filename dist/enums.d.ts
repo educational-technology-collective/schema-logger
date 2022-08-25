@@ -5,3 +5,4 @@ export declare enum Level {
     WARN = 10000,
     ERROR = 100000
 }
+//# sourceMappingURL=enums.d.ts.map

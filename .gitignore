@@ -1,4 +1,3 @@
 .vscode
 node_modules
-schema-logger-test
-.ideas
+/dist

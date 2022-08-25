@@ -1,4 +1,4 @@
-import { IHandler, ILogger, ILoggerOptions } from '../types';
+import { IHandler, ILogger, ILoggerOptions } from '../types.js';
 interface IRegexToolS3BucketLoggerOptions extends ILoggerOptions {
     api: string;
     bucket: string;
@@ -19,3 +19,4 @@ export declare class RegexToolS3BucketLogger implements ILogger {
     processErrorQueue(): void;
 }
 export {};
+//# sourceMappingURL=regex_tool_s3_bucket_logger.d.ts.map
