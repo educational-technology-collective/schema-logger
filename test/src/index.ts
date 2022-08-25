@@ -1,11 +1,20 @@
 import { JSONFormatter } from "schema_logger";
 import { ConsoleHandler } from "schema_logger";
 import { SimpleLogger } from "schema_logger";
+import { S3BucketHandler } from "schema_logger";
 
 let formatter = new JSONFormatter();
 
-let handler = new ConsoleHandler({formatter});
+let consoleHandler = new ConsoleHandler({ formatter });
 
-let logger = new SimpleLogger({handlers:[handler]});
+let s3BucketHandler = new S3BucketHandler({
+    formatter, 
+    api:'https://telemetry.mentoracademy.org', 
+    bucket: 'telemetry-edtech-labs-si-umich-edu',
+    path: '/prod/ohtool'
+});
 
-logger.info('INFO')
+let simpleLogger = new SimpleLogger({ handlers: [consoleHandler, s3BucketHandler] });
+
+simpleLogger.info('TEST OHTOOL')
+
